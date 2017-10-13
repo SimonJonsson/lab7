@@ -1,0 +1,115 @@
+---
+title: "ridgereg"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(caret)
+library(mlbench)
+library(leaps)
+library(lab7)
+library(MASS)
+theSeed <- 1337
+set.seed(theSeed)
+data("BostonHousing")
+```
+
+Here we instantiate the training and test data with the training data being 80% and test data being 20% of the data set.
+```{r instantiation data}
+trainIndex <-
+  caret::createDataPartition(BostonHousing$crim,
+                             p = 0.8,
+                             times = 1,
+                             list = FALSE)
+trainDat <- BostonHousing[trainIndex, ]
+testDat <- BostonHousing[-trainIndex, ]
+form <- tax ~ .
+
+```
+
+We now fit the data to the models using linear regression and linear regression with forward selection on the covariates.
+```{r instantiation models}
+linMod <- caret::train(form,
+                       trainDat,
+                       method = "lm")
+linFMod <- caret::train(form,
+                        trainDat,
+                        method = "leapForward")
+```
+
+We evaluate the models with analyzing the RMSE and $R^2$ values.
+```{r evaluation}
+linMod$results$RMSE
+linFMod$results$RMSE
+```
+
+Analyzing the RMSE and the $R^2$ of the models entails some information. Lower RMSE value would indicate a 'tighter fit' of the data and a higher $R^2$ value indicates a measure of how well observed outcomes are replicated by the model, based on the proportion of total variation of outcomes explained by the model.
+
+```{r instant model thingy, include=FALSE}
+# Acknowledgement to Eric Herwin and Albin Vasterlund
+ridgeMod  <- list(type = "Regression",
+                    library = "lab7",
+                    loop = NULL,
+                    prob = NULL)
+
+
+  ridgeMod$parameters <- data.frame(parameter = "lambda",
+                                    class = "numeric",
+                                    label = "Ridge Regression")
+
+
+  ridgeMod$grid <- function (x, y, len = NULL, search = "grid"){
+    data.frame(lambda = lambda)
+  }
+
+  ridgeMod$fit <- function (x, y, wts, param, lev, last, classProbs, ...) {
+    dat <- if (is.data.frame(x))
+      x
+    else as.data.frame(x)
+    dat$.outcome <- y
+    out <- ridgereg$new(.outcome ~ ., data=dat ,lambda = param$lambda, ...)
+
+    return(out)
+  }
+
+  ridgeMod$predict <- function (modelFit, newdata, submodels = NULL) {
+    if (!is.data.frame(newdata))
+      newdata <- as.data.frame(newdata)
+    return(modelFit$pred(newdata))
+  }
+
+
+```
+
+```{r ass}
+set.seed(theSeed)
+res <- c()
+for(lambda in seq(0.1, 1, by = 0.1)) {
+  temp <- caret::train(form,
+                       data = trainDat,
+                       ridgeMod)
+  res[lambda * 10] <- temp$results$RMSE
+}
+bestLambda <- which.min(res) / 10
+bestRMSE <- res[which.min(res)]
+bestLambda
+bestRMSE
+```
+We see from the code above that the best $\lambda = 0.5$ with the lowest RMSE of 1320.828.
+
+```{r hej}
+# Acknowledgement to Eric Herwin and Albin Vasterlund
+set.seed(theSeed)
+fold_count <- 10
+lambda <- seq(0.1,5,by=0.1)
+fitControl <- caret::trainControl(method = "repeatedcv",
+                                  number = fold_count,
+                                  ## repeated ten times
+                                  repeats = fold_count)
+ridgeMod <- caret::train(form,
+                         data = trainDat,
+                         method = ridgeMod,
+                         trControl = fitControl)
+ridgeMod
+```
+Last line says the best value for $\lambda = 1$.
