@@ -81,10 +81,10 @@ ridgeMod  <- list(type = "Regression",
 
 ```
 
-```{r ass}
+```{r find lambda}
 set.seed(theSeed)
 res <- c()
-for(lambda in seq(0.1, 1, by = 0.1)) {
+for(lambda in seq(0, 20, by = 1)) {
   temp <- caret::train(form,
                        data = trainDat,
                        ridgeMod)
@@ -97,11 +97,11 @@ bestRMSE
 ```
 We see from the code above that the best $\lambda = 0.5$ with the lowest RMSE of 1320.828.
 
-```{r hej}
+```{r crossval}
 # Acknowledgement to Eric Herwin and Albin Vasterlund
 set.seed(theSeed)
 fold_count <- 10
-lambda <- seq(0.1,5,by=0.1)
+lambda <- seq(10,20,by=1)
 fitControl <- caret::trainControl(method = "repeatedcv",
                                   number = fold_count,
                                   ## repeated ten times
@@ -112,4 +112,4 @@ ridgeMod <- caret::train(form,
                          trControl = fitControl)
 ridgeMod
 ```
-Last line says the best value for $\lambda = 1$.
+Last line says the best value for $\lambda = 17$. Which is the same as as we concluded above, though with different RMSE. The interval for $\lambda \in 10:20$
