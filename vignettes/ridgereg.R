@@ -28,7 +28,7 @@ linMod <- caret::train(form,
 linFMod <- caret::train(form,
                         trainDat,
                         method = "leapForward",
-                       trControl = trainC)
+                        trControl = trainC)
 
 ## ----evaluation----------------------------------------------------------
 linMod$results$RMSE
@@ -111,4 +111,14 @@ ridgeM <- list(RMSE = ridgeMod$results$RMSE[7], RSquared = ridgeMod$results$Rsqu
 temp <- cbind(lin,linF,ridgeM)
 colnames(temp) <- c("Lin. Reg", "Lin. Reg. F", "Ridge Reg.")
 temp
+
+## ----eval models---------------------------------------------------------
+# Acknowledgement to Henrik Karlsson
+allModels <- list(linMod, linFMod, ridgeMod)
+names(allModels) = c("Linear Regression", "Lin. Reg. Forward", "Ridge Reg.")
+
+lapply(allModels, function(x) {
+  postResample(predict(x, newdata=testDat), testDat$tax)
+})
+
 

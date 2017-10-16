@@ -45,7 +45,7 @@ linMod <- caret::train(form,
 linFMod <- caret::train(form,
                         trainDat,
                         method = "leapForward",
-                       trControl = trainC)
+                        trControl = trainC)
 ```
 
 We evaluate the models with analyzing the RMSE and $R^2$ values.
@@ -140,3 +140,14 @@ colnames(temp) <- c("Lin. Reg", "Lin. Reg. F", "Ridge Reg.")
 temp
 ```
 
+```{r eval models}
+# Acknowledgement to Henrik Karlsson
+allModels <- list(linMod, linFMod, ridgeMod)
+names(allModels) = c("Linear Regression", "Lin. Reg. Forward", "Ridge Reg.")
+
+lapply(allModels, function(x) {
+  postResample(predict(x, newdata=testDat), testDat$tax)
+})
+
+```
+Looking at the Rsquared metric we see that the clear preferred model is Linear Regression with Forward Selection. Also it has the lowest RMSE. Looking at only RMSE we see that Linear Regression with Forward Selection is still the preferred model, but the Ridge Regression has surprisingly high RMSE - which we can't conclude any result from.
