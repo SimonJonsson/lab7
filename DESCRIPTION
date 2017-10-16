@@ -9,4 +9,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Depends: R (>= 2.1.0), MASS, devtools, dplyr, ggplot2, caret, mlbench
+Depends: R (>= 2.1.0)
+Imports: MASS, devtools, dplyr, ggplot2, caret, mlbench

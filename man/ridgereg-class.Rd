@@ -23,7 +23,7 @@ A RC class for ridge regression models
 \describe{
 \item{\code{coef()}}{Returns the regression coefficients}
 
-\item{\code{pred()}}{Returns fitted values}
+\item{\code{pred(values = NULL)}}{Returns fitted values}
 
 \item{\code{print()}}{Prints the call of the class and ridge regression coefficients in named vector}
 

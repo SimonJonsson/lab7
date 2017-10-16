@@ -1,7 +1,15 @@
 ---
-title: "ridgereg"
-output: pdf_document
+title: "Lab Report Ridgereg"
+name: "lab_report_ridgereg"
+author: "Simon Jönsson, Fanny Karelius"
+date: "`r Sys.Date()`"
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{Lab Report Knapsack}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
+
 
 ```{r setup, include=FALSE}
 library(caret)
@@ -11,6 +19,7 @@ library(lab7)
 library(MASS)
 theSeed <- 1337
 set.seed(theSeed)
+trainC <- caret::trainControl("cv")
 data("BostonHousing")
 ```
 
@@ -31,10 +40,12 @@ We now fit the data to the models using linear regression and linear regression 
 ```{r instantiation models}
 linMod <- caret::train(form,
                        trainDat,
-                       method = "lm")
+                       method = "lm",
+                       trControl = trainC)
 linFMod <- caret::train(form,
                         trainDat,
-                        method = "leapForward")
+                        method = "leapForward",
+                       trControl = trainC)
 ```
 
 We evaluate the models with analyzing the RMSE and $R^2$ values.
@@ -67,7 +78,7 @@ ridgeMod  <- list(type = "Regression",
       x
     else as.data.frame(x)
     dat$.outcome <- y
-    out <- ridgereg$new(.outcome ~ ., data=dat ,lambda = param$lambda, ...)
+    out <- ridgereg(.outcome ~ ., data=dat ,lambda = param$lambda, ...)
 
     return(out)
   }
@@ -75,6 +86,7 @@ ridgeMod  <- list(type = "Regression",
   ridgeMod$predict <- function (modelFit, newdata, submodels = NULL) {
     if (!is.data.frame(newdata))
       newdata <- as.data.frame(newdata)
+    newdata <- scale(newdata)
     return(modelFit$pred(newdata))
   }
 
@@ -96,6 +108,11 @@ bestLambda
 bestRMSE
 ```
 We see from the code above that the best $\lambda = 0.5$ with the lowest RMSE of 1320.828.
+```{r hej, include=FALSE}
+temp <- caret::train(form,
+                       data = trainDat,
+                       ridgeMod)
+```
 
 ```{r crossval}
 # Acknowledgement to Eric Herwin and Albin Vasterlund
@@ -112,4 +129,14 @@ ridgeMod <- caret::train(form,
                          trControl = fitControl)
 ridgeMod
 ```
-Last line says the best value for $\lambda = 17$. Which is the same as as we concluded above, though with different RMSE. The interval for $\lambda \in 10:20$
+Last line says the best value for $\lambda = 17$. Which is the same as as we concluded above, though with different RMSE. The interval for $\lambda \in 10:20$ is motivated by previous larger interval, but for output niceties we chose to limit lambda.
+
+```{r eval values}
+lin <- list(RMSE = linMod$results$RMSE, RSquared = linMod$results$Rsquared)
+linF <- list(RMSE = linFMod$results$RMSE[3], RSquared = linFMod$results$Rsquared[3])
+ridgeM <- list(RMSE = ridgeMod$results$RMSE[7], RSquared = ridgeMod$results$Rsquared[7])
+temp <- cbind(lin,linF,ridgeM)
+colnames(temp) <- c("Lin. Reg", "Lin. Reg. F", "Ridge Reg.")
+temp
+```
+
