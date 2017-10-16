@@ -1,12 +1,10 @@
 
-devtools::install_github("hadley/nycflights13")
-library(nycflights13)
-library(dplyr)
-library(ggplot2)
-
 #' Visualizes the mean delay for airports with positioning on longitude, latitude
 #' @export
 visualize_airport_delays <- function() {
+  devtools::install_github("hadley/nycflights13")
+  library(nycflights13)
+
   flights <- nycflights13::flights
   airports <- nycflights13::airports
 
