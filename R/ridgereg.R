@@ -48,7 +48,7 @@ ridgereg <- setRefClass(
 
       # Ridge regression coefficients
       beta_hat_reg <<-
-        solve(t(R) %*% R + lambda * diag(dim(t(R) %*% R)[1])) %*% t(x_norm) %*% y
+        solve(t(R) %*% R + lambda * diag(dim(t(R) %*% R)[1])) %*% t(R) %*% t(Q) %*% y
 
       # Fitted values
       y_hat <<- x_norm %*% beta_hat_reg # To be calculated

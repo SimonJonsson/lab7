@@ -9,9 +9,10 @@ visualize_airport_delays <- function() {
 
   df <- flights %>%
     dplyr::group_by(dest) %>%
-    dplyr::summarise(mean_delay = mean(df$arr_delay, na.rm=TRUE)) %>%
+    dplyr::summarise(mean_delay = mean(arr_delay, na.rm=TRUE)) %>%
     dplyr::left_join(.,airports, by = c("dest" = "faa"))
 
   ggplot2::ggplot(df, aes(lon, lat), show.legend=FALSE) +
     ggplot2::geom_point(aes(size=mean_delay, alpha=mean_delay, color=mean_delay), show.legend=FALSE)
 }
+

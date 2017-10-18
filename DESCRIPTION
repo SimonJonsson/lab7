@@ -9,6 +9,6 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Depends: R (>= 2.1.0), dplyr
-Imports: MASS, devtools, ggplot2, caret, mlbench, nycflights13, knitr, leaps, methods
+Depends: R (>= 2.1.0), dplyr, nycflights13, mlbench, MASS, caret, leaps, ggplot2
+Imports: MASS, devtools, knitr, methods
 VignetteBuilder: knitr
